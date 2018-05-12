@@ -13,13 +13,13 @@ require "notable/unpermitted_parameters"
 require "notable/unverified_request"
 require "notable/validation_errors"
 require "notable/debug_exceptions"
-require "notable/throttle"
 
 module Notable
   class << self
     attr_accessor :enabled
     attr_accessor :requests_enabled
     attr_accessor :jobs_enabled
+    attr_accessor :throttle_enabled
 
     # requests
     attr_accessor :track_request_method
@@ -35,6 +35,7 @@ module Notable
   self.requests_enabled = true
   self.jobs_enabled = true
   self.mask_ips = false
+  self.throttle_enabled = true
 
   def self.requests_enabled?
     enabled && requests_enabled
@@ -117,6 +118,8 @@ module Notable
     end
   end
 end
+
+require "notable/throttle" if Notable.throttle_enabled
 
 ActiveSupport.on_load(:active_job) do
   if Notable.jobs_enabled?
